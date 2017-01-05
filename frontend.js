@@ -338,8 +338,8 @@ Widget.register(function (widget) {
         {"id": "-1725510067", "item": "xmas.present.small", "info": "Small Present"},
     ];
 
-    var updatePlayerlist = function () {
-        widget.backend("serverstatus", null, function (serverstatus) {
+    var updatePlayerlist = function (forceUpdate) {
+        widget.backend("serverstatus", {"forceUpdate": forceUpdate}, function (serverstatus) {
             var tbody = playerlist.find("tbody");
             tbody.html('');
             icons.find(".host .text").html(serverstatus.server.hostname);
@@ -361,9 +361,9 @@ Widget.register(function (widget) {
                     var icon = playerRow.vacstatus.status == "ok" ? "ok" : "remove";
                     tr.attr("data-id", playerRow.steamid);
                     tr.append($('<td class="id">').text(playerRow.steamid));
-                    tr.append($('<td class="name">').text(playerRow.username));
-                    tr.append($('<td class="time">').text(playerRow.time));
-                    tr.append($('<td class="ip">').text(playerRow.ip));
+                    tr.append($('<td class="name">').text(playerRow.displayname));
+                    tr.append($('<td class="time">').text(parseInt(playerRow.connectedseconds / 60) + "m"));
+                    tr.append($('<td class="ip">').text(playerRow.address));
                     tr.append($('<td class="ping">').text(playerRow.ping));
                     tr.append($('<td class="vacstatus">')
                         .html('<span class="glyphicon glyphicon-' + icon + '-circle"></span>')
@@ -416,7 +416,7 @@ Widget.register(function (widget) {
                 var id = $(this).closest("tr").attr("data-id");
                 if (v == "unban") {
                     widget.cmd(v + " " + id, function () {
-                        updatePlayerlist();
+                        updatePlayerlist(true);
                     });
                 } else if (v == "give") {
                     var html = $('<div class="form-group has-feedback input-group form-inline">' +
@@ -439,7 +439,7 @@ Widget.register(function (widget) {
                     Modal.prompt(widget.t("kickban.reason"), "", function (reason) {
                         if (reason !== false) {
                             widget.cmd(v + " " + id + " \"" + reason + "\"", function () {
-                                updatePlayerlist();
+                                updatePlayerlist(true);
                             });
                         }
                     });

@@ -16,7 +16,7 @@ var widget = new Widget();
 widget.onFrontendMessage = function (server, user, action, messageData, callback) {
     switch (action) {
         case "serverstatus":
-            gametools.rust.serverstatus(server, function (result) {
+            gametools.rust.serverstatus(server, messageData.forceUpdate, function (result) {
                 callback(widget, result);
             });
             break;
