@@ -373,7 +373,7 @@ Widget.register(function (widget) {
                         '<option value="">Action</option>' +
                         '<option value="kick">Kick</option>' +
                         '<option value="ban">Ban</option>' +
-                        '<option value="give">Give</option>' +
+                        '<option value="giveto">Give</option>' +
                         '</select>'));
                     tbody.append(tr);
                 }
@@ -418,7 +418,7 @@ Widget.register(function (widget) {
                     widget.cmd(v + " " + id, function () {
                         updatePlayerlist(true);
                     });
-                } else if (v == "give") {
+                } else if (v == "giveto") {
                     var html = $('<div class="form-group has-feedback input-group form-inline">' +
                         '<input type="number" class="form-control" step="1" min="0">' +
                         '<select class="selectpicker" data-live-search="1">' +
@@ -432,7 +432,7 @@ Widget.register(function (widget) {
                     }
                     Modal.confirm(html, function (success) {
                         if (success) {
-                            // todo give
+                            widget.cmd(v + " " + id + " " + select.val() + " " + input.val());
                         }
                     });
                 } else {
