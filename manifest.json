@@ -1,0 +1,20 @@
+{
+  "id": "rwa-rustboard",
+  "repository": "brainfoolong/rwa-autobot",
+  "version": "0.9.0",
+  "compatibleGames": "all",
+  "compatibleSizes": [
+    "large"
+  ],
+  "options": {},
+  "locale": {
+    "en": {
+      "name": "Rustboard",
+      "description": "The rust board. List all connected players and some server status information.",
+      "kickban.reason": "(Optional) Enter a reason for the kick/ban",
+      "serverstatus": "Serverstatus",
+      "playerlist": "Playerlist",
+      "banlist": "Banlist"
+    }
+  }
+}
