@@ -1,36 +1,9 @@
 "use strict";
 
-Widget.register(function (widget) {
-    var icons = $('<h2 class="collapsable-trigger" data-collapsable-target="rustboard.serverstatus">' + widget.t("serverstatus") + '</h2>' +
-        '<div class="icons collapsable-target" data-collapsable-id="rustboard.serverstatus"><div class="row">' +
-        '<div class="icon host col-md-6"><span class="glyphicon glyphicon-home"></span> <span class="text"></span></div>' +
-        '<div class="icon players col-md-6"><span class="glyphicon glyphicon-user"></span> <span class="text"></span></div>' +
-        '</div>' +
-        '<div class="row">' +
-        '<div class="icon version col-md-6"><span class="glyphicon glyphicon-info-sign"></span> <span class="text"></span></div>' +
-        '<div class="icon map col-md-6"><span class="glyphicon glyphicon-picture"></span> <span class="text"></span></div>' +
-        '</div></div>');
-    var playerlist = $('<div class="playerlist">' +
-        '<h2 class="collapsable-trigger" data-collapsable-target="rustboard.playerlist">' + widget.t("playerlist") + ' <span class="count"></span></h2>' +
-        '<table class="table table-striped table-condensed table-bordered collapsable-target" data-collapsable-id="rustboard.playerlist"><thead>' +
-        '<tr>' +
-        '<th>Id</th>' +
-        '<th>Name</th>' +
-        '<th>Time</th>' +
-        '<th>IP</th>' +
-        '<th>Ping</th>' +
-        '<th>VacStats</th>' +
-        '<th></th>' +
-        '</tr></thead><tbody></tbody></table></div>');
-    var banlist = $('<div class="banlist">' +
-        '<h2 class="collapsable-trigger" data-collapsable-target="rustboard.banlist">' + widget.t("banlist") + ' <span class="count"></span></h2>' +
-        '<table class="table table-striped table-condensed table-bordered collapsable-target" data-collapsable-id="rustboard.banlist"><thead>' +
-        '<tr>' +
-        '<th>Id</th>' +
-        '<th>Name</th>' +
-        '<th>Notes</th>' +
-        '<th></th>' +
-        '</tr></thead><tbody></tbody></table></div>');
+Widget.register("rwa-rustboard",function (widget) {
+    var icons = widget.template(".icons-container");
+    var playerlist = widget.template(".playerlist");
+    var banlist = widget.template(".banlist");
     // from https://github.com/OxideMod/Docs/blob/master/source/includes/rust/item_list.md
     var itemlist = [
         {"id": "2115555558", "item": "ammo.handmade.shell", "info": "Handmade Shell"},
@@ -338,6 +311,10 @@ Widget.register(function (widget) {
         {"id": "-1725510067", "item": "xmas.present.small", "info": "Small Present"},
     ];
 
+    /**
+     * Update the playerlist
+     * @param {boolean=} forceUpdate
+     */
     var updatePlayerlist = function (forceUpdate) {
         widget.backend("serverstatus", {"forceUpdate": forceUpdate}, function (serverstatus) {
             var tbody = playerlist.find("tbody");
