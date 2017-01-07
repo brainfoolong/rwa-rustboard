@@ -14,7 +14,11 @@
       "kickban.reason": "(Optional) Enter a reason for the kick/ban",
       "serverstatus": "Serverstatus",
       "playerlist": "Playerlist",
-      "banlist": "Banlist"
+      "banlist": "Banlist",
+      "chat" : "Chat",
+      "chat.input" : "Say something",
+      "chat.loadmessages" : "Load",
+      "chat.loadmessages.tooltip" : "Load old chat messages. How many is defined in the options"
     }
   }
 }

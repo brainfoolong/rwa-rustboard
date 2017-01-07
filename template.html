@@ -61,3 +61,32 @@
         <tbody></tbody>
     </table>
 </div>
+
+<div class="chat">
+    <h2 class="collapsable-trigger" data-collapsable-target="rustboard.chat">
+        <span class="text" data-translate="chat"></span>
+        <span class="count">(0)</span>
+    </h2>
+    <div class="collapsable-target" data-collapsable-id="rustboard.chat">
+        <div class="chat-messages-log"></div>
+        <div class="chat-messages-new"></div>
+        <div class="form-group has-feedback input-group">
+            <input type="text" class="form-control chat-input" data-translate-property="placeholder,chat.input">
+            <span class="input-group-addon btn btn-primary chat-load" data-translate="chat.loadmessages"
+                  data-translate-property="data-tooltip,chat.loadmessages.tooltip"></span>
+        </div>
+    </div>
+</div>
+
+
+<div class="chat-message">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="box">
+                <span class="timestamp"></span> |
+                <span class="username"></span>
+            </div>
+        </div>
+        <div class="col-sm-8"><div class="text"></div></div>
+    </div>
+</div>

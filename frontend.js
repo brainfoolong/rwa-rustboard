@@ -1,9 +1,11 @@
 "use strict";
 
-Widget.register("rwa-rustboard",function (widget) {
+Widget.register("rwa-rustboard", function (widget) {
     var icons = widget.template(".icons-container");
     var playerlist = widget.template(".playerlist");
     var banlist = widget.template(".banlist");
+    var chat = widget.template(".chat");
+    var chatMessage = widget.template(".chat-message");
     // from https://github.com/OxideMod/Docs/blob/master/source/includes/rust/item_list.md
     var itemlist = [
         {"id": "2115555558", "item": "ammo.handmade.shell", "info": "Handmade Shell"},
@@ -317,6 +319,7 @@ Widget.register("rwa-rustboard",function (widget) {
      */
     var updatePlayerlist = function (forceUpdate) {
         widget.backend("serverstatus", {"forceUpdate": forceUpdate}, function (serverstatus) {
+            if (!serverstatus) return;
             var tbody = playerlist.find("tbody");
             tbody.html('');
             icons.find(".host .text").html(serverstatus.server.hostname);
@@ -383,6 +386,23 @@ Widget.register("rwa-rustboard",function (widget) {
     };
 
     /**
+     * Add chat message
+     * @param {string} type
+     * @param {string} user
+     * @param {string} message
+     * @param {Date} timestamp
+     */
+    var addChatMessage = function (type, user, message, timestamp) {
+        var m = chat.find(".chat-messages-" + type);
+        var cm = chatMessage.clone();
+        cm.find(".text").text(message);
+        cm.find(".timestamp").text(timestamp.toLocaleString());
+        cm.find(".username").text(user).css("color", user == "SERVER" ? '#6cfeae' : '');
+        m.append(cm);
+        chat.find(".count").text('(' + widget.container.find(".chat-message").length + ')');
+    };
+
+    /**
      * On initialization
      */
     widget.onInit = function () {
@@ -423,9 +443,49 @@ Widget.register("rwa-rustboard",function (widget) {
                 }
             }
         });
+        chat.on("keyup", ".chat-input", function (ev) {
+            if (ev.keyCode == 13) {
+                widget.cmd("say " + this.value);
+                addChatMessage(
+                    "new",
+                    "SERVER",
+                    this.value,
+                    new Date()
+                );
+                this.value = "";
+            }
+            if (ev.keyCode == 27) {
+                this.value = "";
+            }
+        });
+        chat.on("click", ".btn.chat-load", function (ev) {
+            widget.cmd("chat.tail 200", function (messageData) {
+                console.log(messageData);
+                var messages = JSON.parse(messageData);
+                chat.find(".chat-messages-log").html('');
+                if (messages) {
+                    for (var i = 0; i < messages.length; i++) {
+                        var message = messages[i];
+                        addChatMessage(
+                            "log",
+                            message.Username,
+                            message.Message,
+                            new Date(message.Time * 1000)
+                        );
+                    }
+                }
+            });
+        });
         widget.content.append(icons);
         widget.content.append(playerlist);
         widget.content.append(banlist);
+        widget.content.append(chat);
+        widget.onRconMessage("chat", function (messageData) {
+            var chatMsg = messageData.body.match(/^\[CHAT\] (.*?)\[([0-9]+)\/([0-9]+)\] \: (.*)/i);
+            if (chatMsg) {
+                addChatMessage("new", chatMsg[1], chatMsg[4], new Date());
+            }
+        });
         collapsable(widget.content);
         updatePlayerlist();
     };

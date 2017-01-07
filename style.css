@@ -31,3 +31,33 @@
 .widget-rwa-rustboard .icons .glyphicon {
     margin-right: 10px;
 }
+
+.widget-rwa-rustboard .chat-message {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.widget-rwa-rustboard .chat-message .col-sm-4 {
+    white-space: nowrap;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.widget-rwa-rustboard .chat-message .box {
+    font-size: 80%;
+    color: #aaaaaa;
+    padding: 2px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 3px;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.widget-rwa-rustboard .chat-message .text{
+    padding:3px;
+}
+
+.widget-rwa-rustboard .chat-message .col-sm-4:hover,
+.widget-rwa-rustboard .chat-message .col-sm-4:active {
+    overflow: visible;
+}
