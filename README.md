@@ -1,7 +1,7 @@
 # Rustboard widget
 ![Rustboard](https://brainfoolong.github.io/rcon-web-admin/images/screenshots/rustboard.png)
 
-The ultimative rcon web admin widget for your rust server.
+The ultimative [RCON Web Admin](https://github.com/brainfoolong/rcon-web-admin) widget for your rust server.
 
 ## Features
 
