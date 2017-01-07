@@ -154,31 +154,39 @@ widget.updateServerstatus = function (server, callback) {
  * @param {RconServer} server
  */
 widget.onUpdate = function (server) {
+    var now = new Date().getTime() / 1000;
     // only update serverstatus each 2 minutes
-    if (!widget.serverstatus[server.id] || widget.serverstatus[server.id].timestamp.getTime() / 1000 < new Date().getTime() / 1000 - 120) {
+    if (!widget.serverstatus[server.id] || widget.serverstatus[server.id].timestamp.getTime() / 1000 < now - 120) {
         widget.updateServerstatus(server);
+    }
+    var lastpingCheck = widget.storage.get(server, "lastpingcheck") || 0;
+    var pingCheckEnabled = lastpingCheck < now - 300;
+    if(pingCheckEnabled){
+        widget.storage.set(server, "lastpingcheck", now);
     }
     if (widget.serverstatus[server.id]) {
         for (var playerIndex in widget.serverstatus[server.id].players.online) {
             if (widget.serverstatus[server.id].players.online.hasOwnProperty(playerIndex)) {
                 var player = widget.serverstatus[server.id].players.online[playerIndex];
-                // check for high pings
-                var pingMax = widget.options.get(server, "kickping");
-                var pingWarn = widget.options.get(server, "kickpingWarn");
-                if (pingMax > 0) {
-                    if (player.ping > pingMax) {
-                        var pingCount = widget.storage.get(server, "pingcount." + player.steamid) || 0;
-                        pingCount++;
-                        if (pingCount > pingWarn) {
-                            pingCount = null;
-                            server.cmd("kick " + player.steamid + " \"Automatic kick -> Ping to high (max." + pingMax + ")\"");
-                            server.cmd("say Kicked player " + player.displayname + ": High ping");
+                // check for high pings every 5 minutes
+                if (pingCheckEnabled) {
+                    var pingMax = widget.options.get(server, "kickping");
+                    var pingWarn = widget.options.get(server, "kickpingWarn")
+                    if (pingMax > 0) {
+                        if (player.ping > pingMax) {
+                            var pingCount = widget.storage.get(server, "pingcount." + player.steamid) || 0;
+                            pingCount++;
+                            if (pingCount > pingWarn) {
+                                pingCount = null;
+                                server.cmd("kick " + player.steamid + " \"Automatic kick -> Ping to high (max." + pingMax + ")\"");
+                                server.cmd("say Kicked player " + player.displayname + ": High ping");
+                            } else {
+                                server.cmd("say High ping warning (" + pingCount + " of " + pingWarn + ") for player " + player.displayname + ". Your ping is " + player.ping + " (max. " + pingMax + ")");
+                            }
+                            widget.storage.set(server, "pingcount." + player.steamid, pingCount, 300);
                         } else {
-                            server.cmd("say High ping warning (" + pingCount + " of " + pingWarn + ") for player " + player.displayname + ". Your ping is " + player.ping + " (max. " + pingMax + ")");
+                            widget.storage.set(server, "pingcount." + player.steamid, null);
                         }
-                        widget.storage.set(server, "pingcount." + player.steamid, pingCount, 300);
-                    } else {
-                        widget.storage.set(server, "pingcount." + player.steamid, null);
                     }
                 }
                 // check for vac

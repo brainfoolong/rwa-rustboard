@@ -59,7 +59,7 @@
       "option.kickping.title": "Kick players with ping higher than",
       "option.kickping.info": "Enter 0 when you want to disable this feature",
       "option.kickpingWarn.title": "Warn user x times before kick by high ping",
-      "option.kickpingWarn.info": "Enter 0 when you want to kick immediately",
+      "option.kickpingWarn.info": "Enter 0 when you want to kick immediately. Check will be done every 5 minutes",
       "option.kickvac.title": "Kick players with more than x VAC bans",
       "option.kickvac.info": "Enter -1 when you want to disable this feature",
       "option.kickchat.title": "Kick players when chat abuse",
