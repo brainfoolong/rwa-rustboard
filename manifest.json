@@ -6,7 +6,14 @@
   "compatibleSizes": [
     "large"
   ],
-  "options": {},
+  "options": {
+    "oldchats": {
+      "type": "number",
+      "min": 0,
+      "step": 1,
+      "default": 200
+    }
+  },
   "locale": {
     "en": {
       "name": "Rustboard",
@@ -15,10 +22,12 @@
       "serverstatus": "Serverstatus",
       "playerlist": "Playerlist",
       "banlist": "Banlist",
-      "chat" : "Chat",
-      "chat.input" : "Say something",
-      "chat.loadmessages" : "Load",
-      "chat.loadmessages.tooltip" : "Load old chat messages. How many is defined in the options"
+      "chat": "Chat",
+      "chat.input": "Say something",
+      "chat.loadmessages": "Load",
+      "chat.loadmessages.tooltip": "Load old chat messages. How many is defined in the options",
+      "option.oldchats.title" : "Number of old chat messages",
+      "option.oldchats.info" : "How many old chat message should be loaded when you hit the load button"
     }
   }
 }

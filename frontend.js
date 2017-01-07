@@ -458,8 +458,8 @@ Widget.register("rwa-rustboard", function (widget) {
                 this.value = "";
             }
         });
-        chat.on("click", ".btn.chat-load", function (ev) {
-            widget.cmd("chat.tail 200", function (messageData) {
+        chat.on("click", ".btn.chat-load", function () {
+            widget.cmd("chat.tail " + widget.options.get("oldchats"), function (messageData) {
                 var messages = JSON.parse(messageData);
                 chat.find(".chat-messages-log").html('');
                 if (messages) {
@@ -496,7 +496,7 @@ Widget.register("rwa-rustboard", function (widget) {
 
     // update playerlist when backend send the serverstatus
     widget.onBackendMessage = function (message) {
-        if(message.serverstatus){
+        if (message.serverstatus) {
             updatePlayerlist();
         }
     };
