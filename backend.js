@@ -142,7 +142,7 @@ widget.updateServerstatus = function (server, callback) {
                     newStatus.timestamp = new Date();
                     widget.serverstatus[server.id] = newStatus;
                     if (callback) callback();
-                    widget.sendMessageToFrontend(server, {"serverstatus" : true});
+                    widget.sendMessageToFrontend(server, {"serverstatus": true});
                 });
             });
         });
@@ -158,6 +158,75 @@ widget.onUpdate = function (server) {
     if (!widget.serverstatus[server.id] || widget.serverstatus[server.id].timestamp.getTime() / 1000 < new Date().getTime() / 1000 - 120) {
         widget.updateServerstatus(server);
     }
+    if (widget.serverstatus[server.id]) {
+        for (var playerIndex in widget.serverstatus[server.id].players.online) {
+            if (widget.serverstatus[server.id].players.online.hasOwnProperty(playerIndex)) {
+                var player = widget.serverstatus[server.id].players.online[playerIndex];
+                // check for high pings
+                var pingMax = widget.options.get(server, "kickping");
+                var pingWarn = widget.options.get(server, "kickpingWarn");
+                if (pingMax > 0) {
+                    if (player.ping > pingMax) {
+                        var pingCount = widget.storage.get(server, "pingcount." + player.steamid) || 0;
+                        pingCount++;
+                        if (pingCount > pingWarn) {
+                            pingCount = null;
+                            server.cmd("kick " + player.steamid + " \"Automatic kick -> Ping to high (max." + pingMax + ")\"");
+                            server.cmd("say Kicked player " + player.displayname + ": High ping");
+                        } else {
+                            server.cmd("say High ping warning (" + pingCount + " of " + pingWarn + ") for player " + player.displayname + ". Your ping is " + player.ping + " (max. " + pingMax + ")");
+                        }
+                        widget.storage.set(server, "pingcount." + player.steamid, pingCount, 300);
+                    } else {
+                        widget.storage.set(server, "pingcount." + player.steamid, null);
+                    }
+                }
+                // check for vac
+                var vacMax = widget.options.get(server, "kickvac");
+                if (vacMax >= 0 && player.vacstatus && player.vacstatus.numberofvacbans > vacMax) {
+                    server.cmd("kick " + player.steamid + " \"Automatic kick -> " + vacMax + " VAC Bans\"");
+                    server.cmd("say Kicked player " + player.displayname + ": " + vacMax + " VAC Bans");
+                }
+            }
+        }
+    }
 };
+
+/**
+ * On receive a server message
+ * @param {RconServer} server
+ * @param {RconMessage} message
+ */
+widget.onServerMessage = function (server, message) {
+    var chatFilter = widget.options.get(server, "kickchat");
+    var chatMsg = message.body.match(/^\[CHAT\] (.*?)\[([0-9]+)\/([0-9]+)\] \: (.*)/i);
+    if (chatFilter && chatMsg) {
+        var words = chatFilter.split(",");
+        var found = false;
+        for (var i = 0; i < words.length; i++) {
+            var word = words[i].trim();
+            if (word) {
+                if (chatMsg[4].match(new RegExp(word, "i"))) {
+                    found = word;
+                    break;
+                }
+            }
+        }
+        if (found !== false) {
+            var steamid = chatMsg[3];
+            var chatMax = widget.options.get(server, "kickchatWarn");
+            var chatCount = widget.storage.get(server, "chatcount." + steamid) || 0;
+            chatCount++;
+            if (chatCount > chatMax) {
+                chatCount = null;
+                server.cmd("kick " + steamid + " \"Automatic kick -> Chat filter\"");
+                server.cmd("say Kicked player " + chatMsg[1] + ": Chat abuse");
+            } else {
+                server.cmd("say " + chatMsg[1] + " you've violated our chat filter rule '" + found + "'. Warning " + chatCount + " of " + chatMax);
+            }
+            widget.storage.set(server, "chatcount." + steamid, chatCount, 300);
+        }
+    }
+}
 
 module.exports = widget;

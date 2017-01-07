@@ -12,6 +12,34 @@
       "min": 0,
       "step": 1,
       "default": 200
+    },
+    "kickping": {
+      "type": "number",
+      "min": 0,
+      "step": 1,
+      "default": 0
+    },
+    "kickpingWarn": {
+      "type": "number",
+      "min": 0,
+      "step": 1,
+      "default": 3
+    },
+    "kickvac": {
+      "type": "number",
+      "min": -1,
+      "step": 1,
+      "default": -1
+    },
+    "kickchat": {
+      "type": "text",
+      "default": ""
+    },
+    "kickchatWarn": {
+      "type": "number",
+      "min": 0,
+      "step": 1,
+      "default": 3
     }
   },
   "locale": {
@@ -26,8 +54,18 @@
       "chat.input": "Say something",
       "chat.loadmessages": "Load",
       "chat.loadmessages.tooltip": "Load old chat messages. How many is defined in the options",
-      "option.oldchats.title" : "Number of old chat messages",
-      "option.oldchats.info" : "How many old chat message should be loaded when you hit the load button"
+      "option.oldchats.title": "Number of old chat messages",
+      "option.oldchats.info": "How many old chat message should be loaded when you hit the load button",
+      "option.kickping.title": "Kick players with ping higher than",
+      "option.kickping.info": "Enter 0 when you want to disable this feature",
+      "option.kickpingWarn.title": "Warn user x times before kick by high ping",
+      "option.kickpingWarn.info": "Enter 0 when you want to kick immediately",
+      "option.kickvac.title": "Kick players with more than x VAC bans",
+      "option.kickvac.info": "Enter -1 when you want to disable this feature",
+      "option.kickchat.title": "Kick players when chat abuse",
+      "option.kickchat.info": "Enter the words to filter, regex allowed. Use , to separate multiple words. Let empty if you want to disable this feature.",
+      "option.kickchatWarn.title": "Warn user x times before kick by chat filter",
+      "option.kickchatWarn.info": "Enter 0 when you want to kick immediately"
     }
   }
 }

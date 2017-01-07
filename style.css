@@ -61,3 +61,7 @@
 .widget-rwa-rustboard .chat-message .col-sm-4:active {
     overflow: visible;
 }
+
+.widget-rwa-rustboard .chat-messages-new{
+    margin-bottom: 10px;
+}
