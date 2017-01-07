@@ -6,6 +6,21 @@ Widget.register("rwa-rustboard", function (widget) {
     var banlist = widget.template(".banlist");
     var chat = widget.template(".chat");
     var chatMessage = widget.template(".chat-message");
+    var serverOptions = widget.template(".server-options");
+
+    // options for the server options
+    var serverSettingsObject = {
+        "server.description": {
+            "type": "textarea"
+        },
+        "server.headerimage": {
+            "type": "text"
+        },
+        "server.stability": {
+            "type": "switch"
+        }
+    };
+
     // from https://github.com/OxideMod/Docs/blob/master/source/includes/rust/item_list.md
     var itemlist = [
         {"id": "2115555558", "item": "ammo.handmade.shell", "info": "Handmade Shell"},
@@ -476,10 +491,56 @@ Widget.register("rwa-rustboard", function (widget) {
                 }
             });
         });
+        serverOptions.on("click", ".save", function () {
+            var callbacksRequired = 0;
+            var callbacksGot = 0;
+            $.each(serverSettingsObject, function (optionKey, optionValue) {
+                var optionEl = serverOptions.find(".option.changed").filter("[data-id='" + optionKey + "']");
+                if (!optionEl.length) return true;
+                var v = option.getValueOfElement(optionEl);
+                v = option.htmlValueToDb(optionValue.type, v);
+                if (v === null) v = "";
+                if (optionValue.type == "switch") v = v ? "True" : "False";
+                v = v.replace(/\n/ig, "\\n").replace(/"/g, "\"");
+                callbacksRequired++;
+                widget.cmd(optionKey + ' "' + v + '"', function () {
+                    callbacksGot++;
+                    if (callbacksGot == callbacksRequired) {
+                        widget.cmd("server.writecfg", function () {
+                            note(widget.t("settings.saved"), "success");
+                        });
+                    }
+                });
+            });
+        }).on("change", ":input", function () {
+            $(this).closest(".option").addClass("changed");
+        });
         widget.content.append(icons);
         widget.content.append(playerlist);
         widget.content.append(banlist);
         widget.content.append(chat);
+        widget.content.append(serverOptions);
+
+        $.each(serverSettingsObject, function (optionKey, optionValue) {
+            widget.cmd(optionKey, function (messageData) {
+                var v = messageData.match(/"(.*)"$/)[1];
+                if (optionValue.type == "switch") {
+                    v = v.toLowerCase() == "true";
+                } else {
+                    v = v.replace(/\\n/g, "\n").replace(/\\/ig, '');
+                }
+                var optionEl = option.createHtmlFromData(
+                    optionKey,
+                    widget.t("settings." + optionKey + ".label"),
+                    widget.t("settings." + optionKey + ".info"),
+                    v,
+                    optionValue
+                );
+                serverOptions.find(".options").append(optionEl);
+                textareaAutoheight(serverOptions);
+            });
+        });
+
         widget.onRconMessage("chat", function (messageData) {
             var chatMsg = messageData.body.match(/^\[CHAT\] (.*?)\[([0-9]+)\/([0-9]+)\] \: (.*)/i);
             if (chatMsg) {
