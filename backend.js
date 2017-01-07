@@ -206,6 +206,11 @@ widget.onUpdate = function (server) {
  * @param {RconMessage} message
  */
 widget.onServerMessage = function (server, message) {
+    // on connect or disconnect, update serverstatus
+    if(message.body.match(/([0-9\.]+)\/([0-9]+)\/(.*?) (joined|disconnect)/i)){
+        widget.updateServerstatus(server);
+        return;
+    }
     var chatFilter = widget.options.get(server, "kickchat");
     var chatMsg = message.body.match(/^\[CHAT\] (.*?)\[([0-9]+)\/([0-9]+)\] \: (.*)/i);
     if (chatFilter && chatMsg) {
@@ -234,6 +239,7 @@ widget.onServerMessage = function (server, message) {
             }
             widget.storage.set(server, "chatcount." + steamid, chatCount, 300);
         }
+        return;
     }
 }
 

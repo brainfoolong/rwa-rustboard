@@ -349,12 +349,7 @@ Widget.register("rwa-rustboard", function (widget) {
                         .html('<span class="glyphicon glyphicon-' + icon + '-circle"></span>')
                         .attr("data-tooltip", vacstatus.join("<br/>"))
                     );
-                    tr.append($('<td class="actions">').html('<select>' +
-                        '<option value="">Action</option>' +
-                        '<option value="kick">Kick</option>' +
-                        '<option value="ban">Ban</option>' +
-                        '<option value="giveto">Give</option>' +
-                        '</select>'));
+                    tr.append($('<td class="actions">').append(widget.template(".online-action")));
                     tbody.append(tr);
                 }
             }
@@ -414,6 +409,12 @@ Widget.register("rwa-rustboard", function (widget) {
                 if (v == "unban") {
                     widget.cmd(v + " " + id, function () {
                         updatePlayerlist(true);
+                    });
+                } else if (v.match(/ownerid|moderatorid|removeowner|removemoderator/)) {
+                    widget.cmd(v + " " + id, function () {
+                        widget.cmd("server.writecfg", function () {
+                            note(widget.t("player.relogin"), "info");
+                        });
                     });
                 } else if (v == "giveto") {
                     var html = $('<div class="form-group has-feedback input-group form-inline">' +

@@ -13,3 +13,4 @@ The ultimative rcon web admin widget for your rust server.
 * Give items to players
 * Chat console
 * Auto kick high ping, vacbans, chat abuse
+* Easily add and remove admins/moderators
