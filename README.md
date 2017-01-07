@@ -1,6 +1,6 @@
 # Rustboard widget
 
-The rust board. List all connected players and some server status information.
+The ultimative rcon web admin widget for your rust server.
 
 ## Features
 
@@ -11,3 +11,5 @@ The rust board. List all connected players and some server status information.
 * Live VAC Status
 * Kick/Ban easily
 * Give items to players
+* Chat console
+* Auto kick high ping, vacbans, chat abuse
