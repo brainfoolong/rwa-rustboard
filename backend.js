@@ -155,7 +155,7 @@ widget.updateServerstatus = function (server, callback) {
  */
 widget.onUpdate = function (server) {
     // only update serverstatus each 2 minutes
-    if (!widget.serverstatus[server.id] || widget.serverstatus[server.id].timestamp.getTime() / 1000 < new Date().getTime() / 1000 - 1) {
+    if (!widget.serverstatus[server.id] || widget.serverstatus[server.id].timestamp.getTime() / 1000 < new Date().getTime() / 1000 - 120) {
         widget.updateServerstatus(server);
     }
 };
