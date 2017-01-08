@@ -10,6 +10,12 @@ Widget.register("rwa-rustboard", function (widget) {
 
     // options for the server options
     var serverSettingsObject = {
+        "setOnBoot": {
+            "type": "switch"
+        },
+        "server.hostname": {
+            "type": "text"
+        },
         "server.description": {
             "type": "textarea"
         },
@@ -329,10 +335,10 @@ Widget.register("rwa-rustboard", function (widget) {
     ];
 
     /**
-     * Update the playerlist
+     * Update the serverstatus and playerlist
      * @param {boolean=} forceUpdate
      */
-    var updatePlayerlist = function (forceUpdate) {
+    var updateServerstatus = function (forceUpdate) {
         widget.backend("serverstatus", {"forceUpdate": forceUpdate}, function (serverstatus) {
             if (!serverstatus) return;
             var tbody = playerlist.find("tbody");
@@ -423,7 +429,7 @@ Widget.register("rwa-rustboard", function (widget) {
                 var id = $(this).closest("tr").attr("data-id");
                 if (v == "unban") {
                     widget.cmd(v + " " + id, function () {
-                        updatePlayerlist(true);
+                        updateServerstatus(true);
                     });
                 } else if (v.match(/ownerid|moderatorid|removeowner|removemoderator/)) {
                     widget.cmd(v + " " + id, function () {
@@ -452,7 +458,7 @@ Widget.register("rwa-rustboard", function (widget) {
                     Modal.prompt(widget.t("kickban.reason"), "", function (reason) {
                         if (reason !== false) {
                             widget.cmd(v + " " + id + " \"" + reason + "\"", function () {
-                                updatePlayerlist(true);
+                                updateServerstatus(true);
                             });
                         }
                     });
@@ -492,28 +498,35 @@ Widget.register("rwa-rustboard", function (widget) {
             });
         });
         serverOptions.on("click", ".save", function () {
-            var callbacksRequired = 0;
+            var callbacksRequired = Object.keys(serverSettingsObject).length;
             var callbacksGot = 0;
+            var settings = widget.storage.get("serversettings") || {};
             $.each(serverSettingsObject, function (optionKey, optionValue) {
-                var optionEl = serverOptions.find(".option.changed").filter("[data-id='" + optionKey + "']");
+                var optionEl = serverOptions.find(".option").filter("[data-id='" + optionKey + "']");
                 if (!optionEl.length) return true;
-                var v = option.getValueOfElement(optionEl);
-                v = option.htmlValueToDb(optionValue.type, v);
-                if (v === null) v = "";
-                if (optionValue.type == "switch") v = v ? "True" : "False";
-                v = v.replace(/\n/ig, "\\n").replace(/"/g, "\"");
-                callbacksRequired++;
-                widget.cmd(optionKey + ' "' + v + '"', function () {
+                var dbValue = option.htmlValueToDb(optionValue.type, option.getValueOfElement(optionEl));
+                var cmdValue = dbValue;
+                if (dbValue === null) cmdValue = "";
+                if (optionValue.type == "switch") cmdValue = cmdValue ? "True" : "False";
+                if (typeof dbValue == "string") dbValue = dbValue.replace(/\\n/g, "\n");
+                cmdValue = cmdValue.replace(/\n/ig, "\\n").replace(/"/g, "\"");
+                settings[optionKey] = {"dbValue": dbValue, "cmdValue": cmdValue};
+                var saveCallback = function () {
                     callbacksGot++;
                     if (callbacksGot == callbacksRequired) {
+                        widget.storage.set("serversettings", settings);
                         widget.cmd("server.writecfg", function () {
+                            updateServerstatus(true);
                             note(widget.t("settings.saved"), "success");
                         });
                     }
-                });
+                };
+                if (optionKey == "setOnBoot") {
+                    saveCallback();
+                } else {
+                    widget.cmd(optionKey + ' "' + cmdValue + '"', saveCallback);
+                }
             });
-        }).on("change", ":input", function () {
-            $(this).closest(".option").addClass("changed");
         });
         widget.content.append(icons);
         widget.content.append(playerlist);
@@ -522,23 +535,18 @@ Widget.register("rwa-rustboard", function (widget) {
         widget.content.append(serverOptions);
 
         $.each(serverSettingsObject, function (optionKey, optionValue) {
-            widget.cmd(optionKey, function (messageData) {
-                var v = messageData.match(/"(.*)"$/)[1];
-                if (optionValue.type == "switch") {
-                    v = v.toLowerCase() == "true";
-                } else {
-                    v = v.replace(/\\n/g, "\n").replace(/\\/ig, '');
-                }
-                var optionEl = option.createHtmlFromData(
-                    optionKey,
-                    widget.t("settings." + optionKey + ".label"),
-                    widget.t("settings." + optionKey + ".info"),
-                    v,
-                    optionValue
-                );
-                serverOptions.find(".options").append(optionEl);
-                textareaAutoheight(serverOptions);
-            });
+            var settings = widget.storage.get("serversettings") || {};
+            var value = typeof settings[optionKey] != "undefined" ? settings[optionKey].dbValue : null;
+            if (optionKey == "server.stability" && value === null) value = true;
+            var optionEl = option.createHtmlFromData(
+                optionKey,
+                widget.t("settings." + optionKey + ".label"),
+                widget.t("settings." + optionKey + ".info"),
+                value,
+                optionValue
+            );
+            serverOptions.find(".options").append(optionEl);
+            textareaAutoheight(serverOptions);
         });
 
         widget.onRconMessage("chat", function (messageData) {
@@ -548,18 +556,18 @@ Widget.register("rwa-rustboard", function (widget) {
             }
         });
         collapsable(widget.content);
-        updatePlayerlist();
+        updateServerstatus();
     };
 
     // update playerlist when backend updates are done
     widget.onBackendUpdate = function () {
-        updatePlayerlist();
+        updateServerstatus();
     };
 
     // update playerlist when backend send the serverstatus
     widget.onBackendMessage = function (message) {
         if (message.serverstatus) {
-            updatePlayerlist();
+            updateServerstatus();
         }
     };
 });

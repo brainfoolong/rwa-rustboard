@@ -14,6 +14,21 @@ widget.serverstatus = {};
  */
 widget.onServerConnected = function (server) {
     widget.updateServerstatus(server);
+    // set settings on boot
+    var settings = widget.storage.get(server, "serversettings");
+    if (settings && settings.setOnBoot) {
+        for (var settingsIndex in settings) {
+            if (settings.hasOwnProperty(settingsIndex)) {
+                var settingsRow = settings[settingsIndex];
+                if (settingsIndex == "setOnBoot" || settingsRow.dbValue === null) continue;
+                server.cmd(settingsIndex + ' "' + settingsRow.cmdValue + '"');
+            }
+        }
+        // update serverstatus after we've set all settings
+        setTimeout(function () {
+            widget.updateServerstatus(server);
+        }, 2000);
+    }
 };
 
 /**
@@ -161,7 +176,7 @@ widget.onUpdate = function (server) {
     }
     var lastpingCheck = widget.storage.get(server, "lastpingcheck") || 0;
     var pingCheckEnabled = lastpingCheck < now - 300;
-    if(pingCheckEnabled){
+    if (pingCheckEnabled) {
         widget.storage.set(server, "lastpingcheck", now);
     }
     if (widget.serverstatus[server.id]) {
@@ -207,7 +222,7 @@ widget.onUpdate = function (server) {
  */
 widget.onServerMessage = function (server, message) {
     // on connect or disconnect, update serverstatus
-    if(message.body.match(/([0-9\.]+)\/([0-9]+)\/(.*?) (joined|disconnect)/i)){
+    if (message.body.match(/([0-9\.]+)\/([0-9]+)\/(.*?) (joined|disconnect)/i)) {
         widget.updateServerstatus(server);
         return;
     }
