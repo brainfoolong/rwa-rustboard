@@ -2,7 +2,9 @@
   "id": "rwa-rustboard",
   "repository": "brainfoolong/rwa-rustboard",
   "version": "0.9.0",
-  "compatibleGames": "all",
+  "compatibleGames": [
+    "rust"
+  ],
   "compatibleSizes": [
     "large"
   ],
