@@ -53,8 +53,8 @@
     background: rgba(0, 0, 0, 0.1);
 }
 
-.widget-rwa-rustboard .chat-message .text{
-    padding:3px;
+.widget-rwa-rustboard .chat-message .text {
+    padding: 3px;
 }
 
 .widget-rwa-rustboard .chat-message .col-sm-4:hover,
@@ -62,6 +62,6 @@
     overflow: visible;
 }
 
-.widget-rwa-rustboard .chat-messages-new{
+.widget-rwa-rustboard .chat-messages-new {
     margin-bottom: 10px;
 }
