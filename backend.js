@@ -115,49 +115,59 @@ widget.updateServerstatus = function (server, callback) {
             }
             newStatus.players.onlineCount = playerlist.length;
             newStatus.players.online = playerlistObject;
-            steamapi.request("bans", ids, function (banStatus) {
-                for (var banIndex in banStatus) {
-                    if (banStatus.hasOwnProperty(banIndex)) {
-                        var banRow = banStatus[banIndex];
-                        var status = "ok";
-                        var newBanRow = {};
-                        for (var steamIndex in banRow) {
-                            if (banRow.hasOwnProperty(steamIndex)) {
-                                var steamValue = banRow[steamIndex];
-                                steamIndex = steamIndex.toLowerCase();
-                                if (steamIndex == "economyban") steamValue = steamValue != "none";
-                                if (steamIndex != "timestamp" && steamIndex != "steamid" && steamValue) {
-                                    status = "suspicious";
-                                }
-                                newBanRow[steamIndex] = steamValue;
-                            }
+            steamapi.request("summaries", ids, function (summaryData) {
+                for (var playerIndex in newStatus.players.online) {
+                    if (newStatus.players.online.hasOwnProperty(playerIndex)) {
+                        var playerRow = newStatus.players.online[playerIndex];
+                        if (typeof summaryData[playerIndex] != "undefined") {
+                            playerRow.summaries = summaryData[playerIndex];
                         }
-                        newBanRow.status = status;
-                        newStatus.players.online[newBanRow.steamid].vacstatus = newBanRow;
                     }
                 }
-
-                // get bans from server
-                server.cmd("bans", null, false, function (messageData) {
-                    if (messageData) {
-                        // fix for 64bit integer
-                        messageData = messageData.replace(/(\"steamid\"\s*:\s*)([0-9]+)/g, function (all) {
-                            return all.replace(/[0-9]+/, "\"$&\"")
-                        });
-                        try {
-                            var bans = JSON.parse(messageData);
-                            newStatus.players.bannedCount = bans.length;
-                            for (var i = 0; i < bans.length; i++) {
-                                newStatus.players.banned[bans[i].steamid] = bans[i];
+                steamapi.request("bans", ids, function (banStatus) {
+                    for (var banIndex in banStatus) {
+                        if (banStatus.hasOwnProperty(banIndex)) {
+                            var banRow = banStatus[banIndex];
+                            var status = "ok";
+                            var newBanRow = {};
+                            for (var steamIndex in banRow) {
+                                if (banRow.hasOwnProperty(steamIndex)) {
+                                    var steamValue = banRow[steamIndex];
+                                    steamIndex = steamIndex.toLowerCase();
+                                    if (steamIndex == "economyban") steamValue = steamValue != "none";
+                                    if (steamIndex != "timestamp" && steamIndex != "steamid" && steamValue) {
+                                        status = "suspicious";
+                                    }
+                                    newBanRow[steamIndex] = steamValue;
+                                }
                             }
-                        } catch (e) {
-
+                            newBanRow.status = status;
+                            newStatus.players.online[newBanRow.steamid].vacstatus = newBanRow;
                         }
                     }
-                    newStatus.timestamp = new Date();
-                    widget.serverstatus[server.id] = newStatus;
-                    if (callback) callback();
-                    widget.sendMessageToFrontend(server, {"serverstatus": true});
+
+                    // get bans from server
+                    server.cmd("bans", null, false, function (messageData) {
+                        if (messageData) {
+                            // fix for 64bit integer
+                            messageData = messageData.replace(/(\"steamid\"\s*:\s*)([0-9]+)/g, function (all) {
+                                return all.replace(/[0-9]+/, "\"$&\"")
+                            });
+                            try {
+                                var bans = JSON.parse(messageData);
+                                newStatus.players.bannedCount = bans.length;
+                                for (var i = 0; i < bans.length; i++) {
+                                    newStatus.players.banned[bans[i].steamid] = bans[i];
+                                }
+                            } catch (e) {
+
+                            }
+                        }
+                        newStatus.timestamp = new Date();
+                        widget.serverstatus[server.id] = newStatus;
+                        if (callback) callback();
+                        widget.sendMessageToFrontend(server, {"serverstatus": true});
+                    });
                 });
             });
         });

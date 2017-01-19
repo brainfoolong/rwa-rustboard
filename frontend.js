@@ -371,6 +371,10 @@ Widget.register("rwa-rustboard", function (widget) {
                         .attr("data-tooltip", vacstatus.join("<br/>"))
                     );
                     tr.append($('<td class="actions">').append(widget.template(".online-action")));
+                    // more profile information
+                    if (playerRow.summaries) {
+                        tr.find(".name").text(playerRow.summaries.personaname).prepend('<img src="' + playerRow.summaries.avatar + '"> ');
+                    }
                     tbody.append(tr);
                 }
             }
@@ -427,7 +431,9 @@ Widget.register("rwa-rustboard", function (widget) {
             if (v.length) {
                 $(this).selectpicker("val", "");
                 var id = $(this).closest("tr").attr("data-id");
-                if (v == "unban") {
+                if (v == "steamprofile") {
+                    window.open('https://steamcommunity.com/profiles/' + id + '/');
+                } else if (v == "unban") {
                     widget.cmd(v + " " + id, function () {
                         updateServerstatus(true);
                     });
