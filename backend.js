@@ -196,7 +196,7 @@ widget.onUpdate = function (server) {
                 // check for high pings every 5 minutes
                 if (pingCheckEnabled) {
                     var pingMax = widget.options.get(server, "kickping");
-                    var pingWarn = widget.options.get(server, "kickpingWarn")
+                    var pingWarn = widget.options.get(server, "kickpingWarn");
                     if (pingMax > 0) {
                         if (player.ping > pingMax) {
                             var pingCount = widget.storage.get(server, "pingcount." + player.steamid) || 0;
@@ -264,8 +264,7 @@ widget.onServerMessage = function (server, message) {
             }
             widget.storage.set(server, "chatcount." + steamid, chatCount, 300);
         }
-        return;
     }
-}
+};
 
 module.exports = widget;
