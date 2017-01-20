@@ -88,7 +88,8 @@
       "option.kickchat.title": "Kick players when chat abuse",
       "option.kickchat.info": "Enter the words to filter, regex allowed. Use , to separate multiple words. Let empty if you want to disable this feature.",
       "option.kickchatWarn.title": "Warn user x times before kick by chat filter",
-      "option.kickchatWarn.info": "Enter 0 when you want to kick immediately"
+      "option.kickchatWarn.info": "Enter 0 when you want to kick immediately",
+      "welcome.message" : "Rustboard will give you all the power tools that you need for administration of your rust server. Also checkout the 'options' icon at right top of the widget."
     },
     "de": {
       "name": "Rustboard",
@@ -133,7 +134,8 @@
       "option.kickchat.title": "Kicke Spieler für Chatabuse",
       "option.kickchat.info": "Gib Worte ein nach denen gefiltert wird. Mehrere mit Beistrich trennen, Regex erlaubt. Leerlassen um dieses Feature zu deaktivieren.",
       "option.kickchatWarn.title": "Warne Spieler x mal bevor er wegen Chatabuse gekickt wird",
-      "option.kickchatWarn.info": "Gib 0 ein um ihn sofort zu kicken"
+      "option.kickchatWarn.info": "Gib 0 ein um ihn sofort zu kicken",
+      "welcome.message" : "Rustboard gibt dir all die Tools die du für deine Serveradministration brauchst. Klick auch mal in die 'Optionen' rechts oben im Widget."
     }
   }
 }

@@ -534,6 +534,7 @@ Widget.register("rwa-rustboard", function (widget) {
                 }
             });
         });
+        widget.content.append(widget.template(".welcome-message"));
         widget.content.append(icons);
         widget.content.append(playerlist);
         widget.content.append(banlist);
@@ -561,7 +562,8 @@ Widget.register("rwa-rustboard", function (widget) {
                 addChatMessage("new", chatMsg[1], chatMsg[4], new Date());
             }
         });
-        collapsable(widget.content);
+        collapsable(widget.content);;
+        dismissable(widget.content);
         updateServerstatus();
     };
 
