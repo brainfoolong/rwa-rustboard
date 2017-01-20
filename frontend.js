@@ -345,6 +345,7 @@ Widget.register("rwa-rustboard", function (widget) {
             tbody.html('');
             icons.find(".host .text").html(serverstatus.server.hostname);
             icons.find(".players .text").html(serverstatus.server.players);
+            icons.find("h2 .info").text(" | " + serverstatus.server.players);
             icons.find(".version .text").html("Version " + serverstatus.server.version);
             icons.find(".map .text").html(serverstatus.server.map);
             var tr = null;
@@ -562,7 +563,8 @@ Widget.register("rwa-rustboard", function (widget) {
                 addChatMessage("new", chatMsg[1], chatMsg[4], new Date());
             }
         });
-        collapsable(widget.content);;
+        collapsable(widget.content);
+        ;
         dismissable(widget.content);
         updateServerstatus();
     };
