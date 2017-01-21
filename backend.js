@@ -216,9 +216,12 @@ widget.onUpdate = function (server) {
                 }
                 // check for vac
                 var vacMax = widget.options.get(server, "kickvac");
-                if (vacMax >= 0 && player.vacstatus && player.vacstatus.numberofvacbans > vacMax) {
-                    server.cmd("kick " + player.steamid + " \"Automatic kick -> " + vacMax + " VAC Bans\"");
-                    server.cmd("say Kicked player " + player.displayname + ": " + vacMax + " VAC Bans");
+                if (vacMax >= 0 && player.vacstatus && player.vacstatus.numberofvacbans) {
+                    var bans = parseInt(player.vacstatus.numberofvacbans);
+                    if (bans && bans > vacMax) {
+                        server.cmd("kick " + player.steamid + " \"Automatic kick -> " + bans + " VAC Bans\"");
+                        server.cmd("say Kicked player " + player.displayname + ": " + bans + " VAC Bans");
+                    }
                 }
             }
         }
